@@ -3,7 +3,7 @@ let arrayOfSounds = []; // all currently playing Sounds
 
 const ATTACK_TIME = 0.02; // how long a Sound takes to fade in
 const RELEASE_TIME = 0.02; // how long a Sound takes to fade out when removed
-const STEP_DURATION = 0.1; // seconds per rhythm step (smaller = faster)
+const STEP_DURATION = 1; // seconds per rhythm step (smaller = faster)
 const GATE_RATIO = 0.5; // fraction of each step the note stays "on" before fading
 const DETUNE_HZ = 10; // detuning in Hz
 
@@ -52,7 +52,9 @@ class Sound{
 
         // fetch the reference text in the background
         fetchOneReference().then(text => {
+            
             if(!arrayOfSounds.includes(this)) return; // this Sound may already be gone
+            
             this.refWords = text.split(/\s+/).filter(w => w.length > 0);
             this.updateDisplay();
         });
@@ -125,7 +127,7 @@ function keyPressed() {
     if(!audioContext) startAudio();
 
     let ascii = key.charCodeAt(0);
-    let bin = ascii.toString(2);
+    let bin = ascii.toString(2); // 0 1 1 0 0 0 0 1
 
     if(findSoundByKey(key)){ // same key again: detune slightly instead of stopping
         ascii += random(DETUNE_HZ);
@@ -133,7 +135,7 @@ function keyPressed() {
 
     arrayOfSounds.push(new Sound(ascii, key, ascii, bin));
 }
-
+    
 function mousePressed(){ // click a Sound's text to remove it
     let clicked = arrayOfSounds.find(s => dist(s.x, s.y, mouseX, mouseY) < 10);
     if(clicked) stopSound(clicked);
